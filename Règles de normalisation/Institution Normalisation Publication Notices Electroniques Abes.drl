@@ -1,0 +1,88 @@
+rule "Nettoyage du niveau bibliographique"
+priority 10
+when
+ (TRUE)
+then
+  #Nettoyage des champs inutiles
+  changeField "035" to "PPN" if (exists "035.a.(ABES)*")
+  replaceContents "PPN.a.(ABES)" with ""
+  removeControlField "***"
+  removeField "0**"
+  removeField "1**"
+  removeField "2**"
+  removeField "3**"
+  removeField "4**"
+  removeField "5**"
+  removeField "6**"
+  removeField "7**"
+  removeField "8**"
+  removeField "9**"
+end
+rule "Traitement des données d'inventaire institution"
+priority 9
+when
+ (TRUE)
+then
+  #Traitement des données d'inventaire 
+  ##Exclusion des portfolios non liés à une bibliothèque
+  changeField "PPP" to "INV" if(exists "PPP.{*,*}.b")
+  ##Correction des urls
+  replaceContents "INV.u.33PUDB_NETWORK" with "33PUDB_UB" if(exists "INV.{*,*}.b.SCOOP_TEST")
+  replaceContents "INV.u.33PUDB_NETWORK" with "33PUDB_UBM" if(exists "INV.{*,*}.b.1000300000")
+  replaceContents "INV.u.33PUDB_NETWORK" with "33PUDB_UB" if(exists "INV.{*,*}.b.3000100000")
+  replaceContents "INV.u.33PUDB_NETWORK" with "33PUDB_IEP" if(exists "INV.{*,*}.b.4000200000")
+  ##Conversion de l'identifiant de la bib. en RCR
+  replaceContents "INV.b.SCOOP_TEST" with "335229901" if(exists "INV.{*,*}.b.SCOOP_TEST")
+  replaceContents "INV.b.1000300000" with "335229901" if(exists "INV.{*,*}.b.1000300000")
+  replaceContents "INV.b.3000100000" with "335229906" if(exists "INV.{*,*}.b.3000100000")
+  replaceContents "INV.b.4000200000" with "335229907" if(exists "INV.{*,*}.b.4000200000")
+  ##Création du 856
+  copyField "INV" to "856" if(exists "INV.{*,*}.u")
+  ##Création du 930
+  copyField "INV" to "930"
+  ##Création du 955
+  copyField "INV" to "955" if(exists "INV.{*,*}.a")
+  ###Création du 997a
+  copyField "INV" to "997"
+  removeField "INV"
+end
+rule "Suppression du champs d'exportation  des données d'inventaires"
+priority 5
+when
+ (TRUE)
+then
+  ### Nettoyage du 997
+  removeSubField "997.b"
+  removeSubField "997.b"
+  removeSubField "997.4"
+  removeSubField "997.u"
+  removeSubField "997.z"
+  removeSubField "997.a"
+  changeSubField "997.7" to "a"
+  moveSubfieldsToEndOfField  "997" "8"
+ ### Nettoyage du 930
+  removeSubField "930.a"
+  removeSubField "930.4"
+  removeSubField "930.u"
+  removeSubField "930.z"
+  removeSubField "930.7"
+  addSubField "930.j.s"
+  moveSubfieldsToEndOfField  "930" "8"
+ ### Nettoyage du 955
+  changeFirstIndicator "955" to "4"
+  changeSecondIndicator "955" to "1"
+  removeSubField "955.b"
+  removeSubField "955.u"
+  removeSubField "955.z"
+  removeSubField "955.7"
+  moveSubfieldsToEndOfField  "955" "8"
+  ### Nettoyage du 856
+  changeFirstIndicator "856" to "4"
+  removeSubField "856.b"
+  removeSubField "856.a"
+  removeSubField "856.4"
+  removeSubField "856.7"
+  addSubField "856.z.Accès restreint aux membres de la communauté universitaire de l'établissement" if(not exists "856.{*,*}.z")
+  moveSubfieldsToEndOfField  "856" "8"
+  removeField "PPP"
+end

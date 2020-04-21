@@ -11,4 +11,4 @@ rule "Fusion Passerelle SUDOC"
         replace MARC."606" when MARC."606"."2" does not contain "agr" excluding MARC."606"("9","#")
         add MARC."461" if does not exists
         add MARC."463" if does not exists
-end
+end*
