@@ -6,9 +6,9 @@ when
 then
   removeField "999"
   #Transfert et mef des PPN en 035 $a et $z (PPN erronnés)
-  addControlField "009.ABES"
+  addControlField "009.PPN"
   addSystemNumber "035.a" from "001" prefixed by "009"
-  prefix "035.a" with "(ABES)" if (exists "035.9.sudoc")
+  prefix "035.a" with "(PPN)" if (exists "035.9.sudoc")
   changeSubField "035.a" to "z" if (exists "035.9.sudoc")
   changeField "035" to "999" if (exists "035.a.(PPN)*")
   changeField "035" to "999" if (exists "035.9.sudoc")   
