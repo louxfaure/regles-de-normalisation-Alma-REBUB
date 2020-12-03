@@ -30,5 +30,5 @@ priority 08
 when
   (TRUE)
 then
- replaceControlContents "008.{22,2}" with "so"
+ replaceControlContents "008.{23,1}" with "o"
 end
