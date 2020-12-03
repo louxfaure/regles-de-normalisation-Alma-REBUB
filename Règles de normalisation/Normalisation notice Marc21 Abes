@@ -1,4 +1,3 @@
-#Normalise et corrige les notices marc21 en provenance de l'ABES
 rule "Met en forme le PPN"
 priority 10
 when
@@ -31,5 +30,5 @@ priority 08
 when
   (TRUE)
 then
- replaceControlContents "008.{23,1}" with "o"
+ replaceControlContents "008.{22,2}" with "so"
 end
