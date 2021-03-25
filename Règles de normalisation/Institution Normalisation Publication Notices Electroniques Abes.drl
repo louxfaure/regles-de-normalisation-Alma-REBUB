@@ -4,8 +4,8 @@ when
  (TRUE)
 then
   #Nettoyage des champs inutiles
-  changeField "035" to "PPN" if (exists "035.a.(ABES)*")
-  replaceContents "PPN.a.(ABES)" with ""
+  changeField "035" to "PPN" if (exists "035.a.(PPN)*")
+  replaceContents "PPN.a.(PPN)" with ""
   removeControlField "***"
   removeField "0**"
   removeField "1**"
