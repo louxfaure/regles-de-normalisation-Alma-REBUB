@@ -24,18 +24,7 @@ when
  (TRUE)
 then
   #Traitement des données d'inventaire 
-  ##Exclusion des portfolios non liés à une bibliothèque
-  changeField "PPP" to "INV" if(exists "PPP.{*,*}.b")
-  ##Correction des urls
-  replaceContents "INV.u.33PUDB_NETWORK" with "33PUDB_UB" if(exists "INV.{*,*}.b.SCOOP_TEST")
-  replaceContents "INV.u.33PUDB_NETWORK" with "33PUDB_UBM" if(exists "INV.{*,*}.b.1000300000")
-  replaceContents "INV.u.33PUDB_NETWORK" with "33PUDB_UB" if(exists "INV.{*,*}.b.3000100000")
-  replaceContents "INV.u.33PUDB_NETWORK" with "33PUDB_IEP" if(exists "INV.{*,*}.b.4000200000")
-  ##Conversion de l'identifiant de la bib. en RCR
-  replaceContents "INV.b.SCOOP_TEST" with "335229901" if(exists "INV.{*,*}.b.SCOOP_TEST")
-  replaceContents "INV.b.1000300000" with "335229901" if(exists "INV.{*,*}.b.1000300000")
-  replaceContents "INV.b.3000100000" with "335229906" if(exists "INV.{*,*}.b.3000100000")
-  replaceContents "INV.b.4000200000" with "335229907" if(exists "INV.{*,*}.b.4000200000")
+  changeField "PPP" to "INV" if(exists "PPP.{*,*}.8")
   ##Création du 856
   copyField "INV" to "856" if(exists "INV.{*,*}.u")
   ##Création du 930
@@ -52,8 +41,6 @@ when
  (TRUE)
 then
   ### Nettoyage du 997
-  removeSubField "997.b"
-  removeSubField "997.b"
   removeSubField "997.4"
   removeSubField "997.u"
   removeSubField "997.z"
@@ -66,19 +53,18 @@ then
   removeSubField "930.u"
   removeSubField "930.z"
   removeSubField "930.7"
+  addSubField "930.b.335229901"
   addSubField "930.j.s"
   moveSubfieldsToEndOfField  "930" "8"
  ### Nettoyage du 955
   changeFirstIndicator "955" to "4"
   changeSecondIndicator "955" to "1"
-  removeSubField "955.b"
   removeSubField "955.u"
   removeSubField "955.z"
   removeSubField "955.7"
   moveSubfieldsToEndOfField  "955" "8"
   ### Nettoyage du 856
   changeFirstIndicator "856" to "4"
-  removeSubField "856.b"
   removeSubField "856.a"
   removeSubField "856.4"
   removeSubField "856.7"
