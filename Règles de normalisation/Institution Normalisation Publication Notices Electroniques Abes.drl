@@ -1,11 +1,15 @@
 rule "Nettoyage du niveau bibliographique"
+##################################
 priority 10
 when
  (TRUE)
 then
-  #Nettoyage des champs inutiles
-  changeField "035" to "PPN" if (exists "035.a.(PPN)*")
+  #Construction du champs PPN
+  copyField  "035.a" to "PPN.a" if (exists "035.a.(PPN)*")
   replaceContents "PPN.a.(PPN)" with ""
+  correctDuplicateFields "PPN"
+ 
+  #Nettoyage des champs inutiles
   removeControlField "***"
   removeField "0**"
   removeField "1**"
@@ -18,10 +22,13 @@ then
   removeField "8**"
   removeField "9**"
 end
-rule "Traitement des données d'inventaire institution"
+#_______________________________________
+
+rule "Traitement des données d'inventaire institution quand le portfolio est actif"
+###############################################################
 priority 9
 when
- (TRUE)
+ (exists "PPP.{*,*}.s.Available")
 then
   #Traitement des données d'inventaire 
   changeField "PPP" to "INV" if(exists "PPP.{*,*}.8")
@@ -30,17 +37,80 @@ then
   ##Création du 930
   copyField "INV" to "930"
   ##Création du 955
-  copyField "INV" to "955" if(exists "INV.{*,*}.a")
+  changeField "COV" to "955" if(exists "COV.{*,*}.8")
   ###Création du 997a
   copyField "INV" to "997"
   removeField "INV"
 end
+#_______________________________________
+
+rule "Traitement des données d'inventaire institution quand le portfolio est inactif"
+#################################################################
+priority 8
+when
+ (exists "PPP.{*,*}.s.Not Available")
+then
+  #Traitement des données d'inventaire 
+  changeField "PPP" to "INV" if(exists "PPP.{*,*}.8")
+  removeField "COV"
+  removeField "EMB"
+  ##Création de la note 319 indiquant l'indisponibilité de la collection
+  copyField "INV" to "319"
+  removeSubField "319.a"
+  removeSubField "319.4"
+  removeSubField "319.s"
+  removeSubField "319.u"
+  removeSubField "319.z"
+  removeSubField "319.7"
+  addSubField "319.a.Ressource non disponible"
+  moveSubfieldsToEndOfField  "319" "8"
+  ##Création du 930
+  copyField "INV" to "930"
+  ###Création du 997a
+  copyField "INV" to "997"
+  removeField "INV"
+end
+#_______________________________________
+
+rule "Traitement des embargos sur les dernières annèes"
+#################################################################
+priority 7
+when
+ (exists "EMB.{*,*}.a.>")
+then
+  #Traitement des données d'inventaire 
+  copyField "EMB.b" to "955.4"
+  prefix "955.4" with "Embargo sur les "
+  suffix "955.4" with " dernières années"
+  combineFields "955" excluding "z"
+  removeField "EMB"
+ end
+#_______________________________________
+
+
+rule "Traitement des embargos sur les premières annèes"
+#################################################################
+priority 7
+when
+ (exists "EMB.{*,*}.a.<")
+then
+  #Traitement des données d'inventaire 
+  copyField "EMB.b" to "955.4"
+  prefix "955.4" with "Embargo sur les "
+  suffix "955.4" with " premières années"
+  combineFields "955" excluding "z"
+  removeField "EMB"
+ end
+#_______________________________________
+
 rule "Suppression du champs d'exportation  des données d'inventaires"
+#########################################################
 priority 5
 when
  (TRUE)
 then
   ### Nettoyage du 997
+  removeSubField "997.s"
   removeSubField "997.4"
   removeSubField "997.u"
   removeSubField "997.z"
@@ -48,23 +118,22 @@ then
   changeSubField "997.7" to "a"
   moveSubfieldsToEndOfField  "997" "8"
  ### Nettoyage du 930
+  removeSubField "930.s"
   removeSubField "930.a"
   removeSubField "930.4"
   removeSubField "930.u"
   removeSubField "930.z"
   removeSubField "930.7"
-  addSubField "930.b.335229901"
+  addSubField "930.b.330009999"
   addSubField "930.j.s"
   moveSubfieldsToEndOfField  "930" "8"
  ### Nettoyage du 955
-  changeFirstIndicator "955" to "4"
-  changeSecondIndicator "955" to "1"
-  removeSubField "955.u"
-  removeSubField "955.z"
-  removeSubField "955.7"
-  moveSubfieldsToEndOfField  "955" "8"
+ changeFirstIndicator "955" to "4"
+ changeSecondIndicator "955" to "1"
+ moveSubfieldsToEndOfField  "930" "8"
   ### Nettoyage du 856
   changeFirstIndicator "856" to "4"
+  removeSubField "856.s"
   removeSubField "856.a"
   removeSubField "856.4"
   removeSubField "856.7"
