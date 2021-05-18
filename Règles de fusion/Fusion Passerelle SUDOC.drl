@@ -2,11 +2,11 @@ rule "Fusion Passerelle SUDOC"
   when
 	 merge
   then
-  	remove MARC."XXX" excluding "330,461,463,606,998"
+  	remove MARC."XXX" excluding "330,461,463,606,995,996,998"
         remove MARC."461" if not exists subfield "5"
         remove MARC."463" if not exists subfield "5"
         replace MARC."009"
-  	replace MARC.XXX excluding "330,461,463,606,998"
+  	replace MARC.XXX excluding "330,461,463,606,995,996,998"
         replace MARC."330" when MARC."330"."9" does not contain "BxSA" excluding MARC."330"("9","#")
         replace MARC."606" when MARC."606"."2" does not contain "agr" excluding MARC."606"("9","#")
         add MARC."461" if does not exists
