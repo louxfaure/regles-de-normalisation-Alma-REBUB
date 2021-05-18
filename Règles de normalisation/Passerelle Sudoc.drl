@@ -1,4 +1,5 @@
 rule "PasserelleSUDOC"
+priority 10
 when
  (TRUE)
 then
@@ -66,4 +67,12 @@ then
   prefix "029.b" with "(NNT)"
   copyField "029.b" to "035.a" 
   replaceContents "029.b.(NNT)" with ""
+end
+
+rule "Si plusieurs champs 500 alors on empêche la fusion"
+priority 9
+when
+   (existsMoreThanOnce "500.a")
+then
+   addSubField "995.a.y"
 end
