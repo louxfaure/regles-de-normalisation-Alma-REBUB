@@ -74,5 +74,5 @@ priority 9
 when
    (existsMoreThanOnce "500.a")
 then
-   addSubField "995.a.y"
+   addField "995.a.y"
 end
