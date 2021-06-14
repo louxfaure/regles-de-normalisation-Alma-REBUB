@@ -5,10 +5,11 @@ when
  (TRUE)
 then
   #Construction du champs PPN
-  copyField  "035.a" to "PPN.a" if (exists "035.a.(PPN)*")
+  removeField "035" if (exists "035.9.sudoc")
+  copyField  "035" to "PPN" if (exists "035.a.(PPN)*")
   replaceContents "PPN.a.(PPN)" with ""
   correctDuplicateFields "PPN"
- 
+
   #Nettoyage des champs inutiles
   removeControlField "***"
   removeField "0**"
@@ -20,7 +21,7 @@ then
   removeField "6**"
   removeField "7**"
   removeField "8**"
-  removeField "9**"
+  #removeField "9**"
 end
 #_______________________________________
 
@@ -124,6 +125,7 @@ then
   removeSubField "930.u"
   removeSubField "930.z"
   removeSubField "930.7"
+ #Injection du RCR
   addSubField "930.b.330009999"
   addSubField "930.j.s"
   moveSubfieldsToEndOfField  "930" "8"
@@ -140,4 +142,12 @@ then
   addSubField "856.z.Accès restreint aux membres de la communauté universitaire de l'établissement" if(not exists "856.{*,*}.z")
   moveSubfieldsToEndOfField  "856" "8"
   removeField "PPP"
+end
+
+rule "Fusion des états de collection"
+when
+existsMoreThanOnce "955"
+then
+addSubField "955.0"
+combineFields "955" excluding "8"
 end
