@@ -21,7 +21,7 @@ then
   removeField "6**"
   removeField "7**"
   removeField "8**"
-  #removeField "9**"
+  removeField "9**"
 end
 #_______________________________________
 
