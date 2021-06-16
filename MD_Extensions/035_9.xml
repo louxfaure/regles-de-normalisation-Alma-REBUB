@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<marc_profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"	xsi:noNamespaceSchemaLocation="marc21_profile_configuration.xsd">
+<data_fields_list>
+	<data_field_configuration tag="035"
+		repeatable="true">
+		<description>OTHER SYSTEM CONTROL NUMBERS</description>
+		<sub_fields_list>
+			<sub_field_configuration code="9" repeatable="false">
+				<description>System Control Number</description>
+			</sub_field_configuration>
+		</sub_fields_list>
+    </data_field_configuration>
+</data_fields_list>
+</marc_profile>
