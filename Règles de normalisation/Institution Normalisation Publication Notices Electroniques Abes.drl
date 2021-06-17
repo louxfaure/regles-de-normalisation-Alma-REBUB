@@ -1,3 +1,14 @@
+rule "Fusion des états de collection"
+#############################
+priority 11
+when
+(existsMoreThanOnce "COV")
+then
+addSubField "COV.0 "
+combineFields "COV" excluding "8"
+end
+#_______________________________________
+
 rule "Nettoyage du niveau bibliographique"
 ##################################
 priority 10
@@ -91,7 +102,7 @@ then
 
 rule "Traitement des embargos sur les premières annèes"
 #################################################################
-priority 7
+priority 6
 when
  (exists "EMB.{*,*}.a.<")
 then
@@ -104,9 +115,11 @@ then
  end
 #_______________________________________
 
+
+
 rule "Suppression du champs d'exportation  des données d'inventaires"
 #########################################################
-priority 5
+priority 4
 when
  (TRUE)
 then
@@ -144,10 +157,13 @@ then
   removeField "PPP"
 end
 
-rule "Fusion des états de collection"
+rule "Fusion des PPN"
+#############################
+priority 6
 when
-existsMoreThanOnce "955"
+(existsMoreThanOnce "PPN")
 then
-addSubField "955.0"
-combineFields "955" excluding "8"
+#combineFields "PPN" excluding "8"
+#changeSubFieldOnlyFirst "PPN.a" to "z"
 end
+#_______________________________________
