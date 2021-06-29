@@ -1,10 +1,20 @@
+rule "ordre des champs pour les états de collections"
+#############################
+priority 12
+when
+(TRUE)
+then
+moveSubfieldsToEndOfField "COV" "debcanolmk" 
+end
+#_______________________________________
+
 rule "Fusion des états de collection"
 #############################
 priority 11
 when
 (existsMoreThanOnce "COV")
 then
-addSubField "COV.0 "
+addSubField "COV.0.&#32;"
 combineFields "COV" excluding "8"
 end
 #_______________________________________
