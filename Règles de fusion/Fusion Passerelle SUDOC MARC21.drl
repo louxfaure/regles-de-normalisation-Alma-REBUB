@@ -1,0 +1,52 @@
+rule "Fusion Passerelle SUDOC Marc21"
+when
+
+    merge
+
+then
+
+    remove MARC."LDR"
+
+    remove MARC."0"XX
+
+    remove MARC."1"XX
+
+    remove MARC."2"XX
+
+    remove MARC."3"XX
+
+    remove MARC."4"XX
+
+    remove MARC."5"XX
+
+    remove MARC."6"XX
+
+    remove MARC."7"XX
+
+    remove MARC."8"XX
+
+    remove MARC."9"XX
+
+    add MARC."LDR"
+
+    add MARC."0"XX
+
+    add MARC."1"XX
+
+    add MARC."2"XX
+
+    add MARC."3"XX
+
+    add MARC."4"XX
+
+    add MARC."5"XX
+
+    add MARC."6"XX
+
+    add MARC."7"XX
+
+    add MARC."8"XX
+
+    add MARC."9"XX
+
+end
