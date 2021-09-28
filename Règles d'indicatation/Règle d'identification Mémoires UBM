@@ -1,6 +1,6 @@
 rule "Règle d'identification Mémoires UBM"
 when
-     (exists "856.u.https://extranet.u-bordeaux-montaigne.fr/memoires/*")
+     (not exists "856.u.https://extranet.u-bordeaux-montaigne.fr/memoires/*")
 then
 	set indication."true"
 end
