@@ -27,6 +27,7 @@ when
 then
   #Construction du champs PPN
   removeField "035" if (exists "035.9.sudoc")
+  removeSubField "035.z"
   copyField  "035" to "PPN" if (exists "035.a.(PPN)*")
   replaceContents "PPN.a.(PPN)" with ""
   correctDuplicateFields "PPN"
@@ -43,6 +44,7 @@ then
   removeField "7**"
   removeField "8**"
   removeField "9**"
+  #Ajout du code PEB 
 end
 #_______________________________________
 
@@ -52,10 +54,13 @@ priority 9
 when
  (exists "PPP.{*,*}.s.Available")
 then
+ #Ajout code PEB
+  addSubField "PPP.j.s"
   #Traitement des données d'inventaire 
   changeField "PPP" to "INV" if(exists "PPP.{*,*}.8")
   ##Création du 856
   copyField "INV" to "856" if(exists "INV.{*,*}.u")
+  changeSubField "856.n" to "2"
   ##Création du 930
   copyField "INV" to "930"
   ##Création du 955
@@ -72,6 +77,8 @@ priority 8
 when
  (exists "PPP.{*,*}.s.Not Available")
 then
+  #On ajoute le code PEB
+   addSubField "PPP.j.g"
   #Traitement des données d'inventaire 
   changeField "PPP" to "INV" if(exists "PPP.{*,*}.8")
   removeField "COV"
@@ -79,6 +86,8 @@ then
   ##Création de la note 319 indiquant l'indisponibilité de la collection
   copyField "INV" to "319"
   removeSubField "319.a"
+  removeSubField "319.n"
+   removeSubField "319.j"
   removeSubField "319.4"
   removeSubField "319.s"
   removeSubField "319.u"
@@ -86,6 +95,17 @@ then
   removeSubField "319.7"
   addSubField "319.a.Ressource non disponible"
   moveSubfieldsToEndOfField  "319" "8"
+ ##Ajout de la note en 856 2
+  copyField "INV" to "856"
+  removeSubField "856.a"
+  removeSubField "856.4"
+  removeSubField "856.s"
+  removeSubField "856.j"
+  removeSubField "856.u"
+  removeSubField "856.z"
+  removeSubField "856.7"
+  addSubField "856.2.Ressource non disponible"
+  moveSubfieldsToEndOfField  "856" "8"
   ##Création du 930
   copyField "INV" to "930"
   ###Création du 997a
@@ -96,7 +116,7 @@ end
 
 rule "Traitement des embargos sur les dernières annèes"
 #################################################################
-priority 7
+priority 5
 when
  (exists "EMB.{*,*}.a.>")
 then
@@ -112,7 +132,7 @@ then
 
 rule "Traitement des embargos sur les premières annèes"
 #################################################################
-priority 6
+priority 4
 when
  (exists "EMB.{*,*}.a.<")
 then
@@ -129,19 +149,22 @@ then
 
 rule "Suppression du champs d'exportation  des données d'inventaires"
 #########################################################
-priority 4
+priority 3
 when
  (TRUE)
 then
   ### Nettoyage du 997
+  removeSubField "997.n"
   removeSubField "997.s"
   removeSubField "997.4"
   removeSubField "997.u"
+  removeSubField "997.j"
   removeSubField "997.z"
   removeSubField "997.a"
   changeSubField "997.7" to "a"
   moveSubfieldsToEndOfField  "997" "8"
  ### Nettoyage du 930
+  removeSubField "930.n"
   removeSubField "930.s"
   removeSubField "930.a"
   removeSubField "930.4"
@@ -150,7 +173,7 @@ then
   removeSubField "930.7"
  #Injection du RCR
   addSubField "930.b.330009999"
-  addSubField "930.j.s"
+ 
   moveSubfieldsToEndOfField  "930" "8"
  ### Nettoyage du 955
  changeFirstIndicator "955" to "4"
@@ -158,18 +181,21 @@ then
  moveSubfieldsToEndOfField  "930" "8"
   ### Nettoyage du 856
   changeFirstIndicator "856" to "4"
+  removeSubField "856.n"
   removeSubField "856.s"
   removeSubField "856.a"
   removeSubField "856.4"
+   removeSubField "856.j"
   removeSubField "856.7"
   addSubField "856.z.Accès restreint aux membres de la communauté universitaire de l'établissement" if(not exists "856.{*,*}.z")
+  moveSubfieldsToEndOfField  "856" "2"
   moveSubfieldsToEndOfField  "856" "8"
   removeField "PPP"
 end
 
 rule "Fusion des PPN"
 #############################
-priority 6
+priority 2
 when
 (existsMoreThanOnce "PPN")
 then
