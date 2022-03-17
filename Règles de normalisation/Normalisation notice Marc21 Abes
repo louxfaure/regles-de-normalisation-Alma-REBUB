@@ -10,6 +10,7 @@ then
   prefix "035.a" with "(PPN)" if (exists "035.9.sudoc")
   changeSubField "035.a" to "z" if (exists "035.9.sudoc")
   changeField "035" to "999" if (exists "035.a.(PPN)*")
+  changeField "035" to "999" if (exists "035.z.(PPN)*")
   changeField "035" to "999" if (exists "035.9.sudoc")   
   #On ne conserve que les 035 PPN
   combineFields "999" excluding "9"
@@ -31,4 +32,12 @@ when
   (TRUE)
 then
  replaceControlContents "008.{23,1}" with "o"
+end
+rule "On transfert le PPN valide en 999 pour exploitation statistique"
+priority 07
+when
+  (TRUE)
+then
+  copyField "035.a" to "999.a"  if (exists "035.a.(PPN)*")
+  replaceContents "999.a.(PPN)" with ""
 end
