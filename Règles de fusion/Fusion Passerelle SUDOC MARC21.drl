@@ -12,7 +12,22 @@ then
    replace MARC."5"XX excluding "505,520"
    replace MARC."505" if exists
    replace MARC."520" if exists
-   replace MARC."6"XX
+   replace MARC."6"XX excluding "600,610,611,630,647,648,650,651,653,654,655,656,657,658,662"
+   replace MARC."600" if exists
+   replace MARC."610" if exists
+   replace MARC."611" if exists
+   replace MARC."630" if exists
+   replace MARC."647" if exists
+   replace MARC."648" if exists
+   replace MARC."650" if exists
+   replace MARC."651" if exists
+   replace MARC."653" if exists
+   replace MARC."654" if exists
+   replace MARC."655" if exists
+   replace MARC."656" if exists
+   replace MARC."657" if exists
+   replace MARC."658" if exists
+   replace MARC."662" if exists
    replace MARC."7"XX
    replace MARC."8"XX
    replace MARC."9"XX
