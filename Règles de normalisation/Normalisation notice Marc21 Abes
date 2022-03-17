@@ -41,3 +41,13 @@ then
   copyField "035.a" to "999.a"  if (exists "035.a.(PPN)*")
   replaceContents "999.a.(PPN)" with ""
 end
+rule "Mise en forme des 7## pour liens entre notices"
+priority 06
+when
+  (TRUE)
+then
+  replaceContents "76*.w.(ABES)" with "(PPN)"
+  replaceContents "77*.w.(ABES)" with "(PPN)"
+  replaceContents "78*.w.(ABES)" with "(PPN)"
+  
+end
