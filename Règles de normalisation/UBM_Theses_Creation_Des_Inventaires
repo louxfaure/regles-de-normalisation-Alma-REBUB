@@ -1,0 +1,135 @@
+rule "PasserelleSUDOC"
+priority 10
+when
+ (TRUE)
+then
+  removeField "999"
+  #Transfert et mef des PPN en 035 $a et $z (PPN erronnés)
+  addControlField "009.PPN"
+  addSystemNumber "035.a" from "001" prefixed by "009"
+  prefix "035.a" with "(PPN)" if (exists "035.9.sudoc")
+  changeSubField "035.a" to "z" if (exists "035.9.sudoc")
+  changeField "035" to "999" if (exists "035.a.(PPN)*")
+  changeField "035" to "999" if (exists "035.9.sudoc")   
+  #On ne conserve que les 035 PPN
+  removeField "035"
+  combineFields "999" excluding "9"
+  removeSubField "999.9"
+  changeField "999" to "035"
+  removeControlField "009"
+  removeField "PPN"
+
+  #Remplace la 214 par une 210
+  copyField "214" to "210"
+ 
+  #Mise en forme des 4## pour liens entre notices
+  changeSubField "4**.0" to "1"
+  prefix "4**.1" with "001(PPN)"
+ 
+  #Nettoyage des caractères de rejets des articles dans les titres
+  replaceContents "2**.*.\u0098" with "<<"
+  replaceContents "2**.*.\u009c" with ">>"
+  replaceContents "4**.*.\u0098" with "<<"
+  replaceContents "4**.*.\u009c" with ">>"
+  replaceContents "046.v.\u0098" with "<<"
+  replaceContents "046.v.\u009c" with ">>"
+  replaceContents "3**.*.\u0098" with "<<"
+  replaceContents "3**.*.\u009c" with ">>"
+  replaceContents "5**.*.\u0098" with "<<"
+  replaceContents "5**.*.\u009c" with ">>"
+  replaceContents "6**.*.\u0098" with "<<"
+  replaceContents "6**.*.\u009c" with ">>"
+  replaceContents "7**.*.\u0098" with "<<"
+  replaceContents "7**.*.\u009c" with ">>"
+  #Nettoyage des 801
+  removeField "801" if (exists "801.b.UBS")
+  removeField "801" if (exists "801.b.OCLC")
+  removeField "801" if (exists "801.b.BN")
+  removeField "801" if (exists "801.b.SF")
+  removeField "801" if (exists "801.b.Electre")
+  removeField "801" if (exists "801.b.AUROC")
+  removeField "801" if (exists "801.b.ISSN")
+  
+  #Suppression de tous les champs 9## attente validation IEP
+  #removeField "9*"
+  #On supprime le 001 pour qu'il ne soit pas copié en 035
+  removeControlField "001"
+
+  #Alma traduit déjà le ss-chp d en = on efface celui envoyé par l'Abes
+  replaceContents "200.d.=" with ""
+  replaceContents "4**.l.=" with ""
+  
+  #On transfert le PPN valide en 999 pour exploitation statistique
+  copyField "035.a" to "999.a"  if (exists "035.a.(PPN)*")
+  replaceContents "999.a.(PPN)" with ""
+  
+  #NNT en 035
+  prefix "029.b" with "(NNT)"
+  copyField "029.b" to "035.a" 
+  replaceContents "029.b.(NNT)" with ""
+end
+
+rule "Si plusieurs champs 500 alors on empêche la fusion dans Primo"
+priority 8
+when
+   (existsMoreThanOnce "500.a")
+then
+   addField "995.a.y"
+end
+
+##########################################
+###THESES CREATIONS DES INVENTAIRES####
+##########################################
+
+#Cas des thèses accessibles
+rule "Thèses accessibles"
+priority 7
+when
+    ((exists "856.u") AND (not exists "310.a") AND (not exists "371.a") AND (not exists "856.z.Accès réservé au texte intégral")  AND (not exists "856.z.Accès au texte intégral de la version partielle"))
+then
+      copyField "856.u" to "LIE.a"  if (exists "856.q")
+end
+
+#Cas des thèses en accès restreint 
+rule "Thèses en accès restreint"
+priority 6
+when
+    ((exists "856.z.Accès réservé au texte intégral") and (not exists "856.z.Accès au texte intégral de la version partielle") )
+then
+      addField "NOT.a.<h1>Thèse en accès limité</h1> <p>L'auteur de cette thèse n'a pas autorisé la diffusion Internet de sa thèse ou l'a soumise à un embargo avant sa diffusion.</p><p>Pour la consulter, vous devez vous rendre à la bibliothèque <a href='https://www.u-bordeaux-montaigne.fr/fr/documentation/vos-bibliotheques/bibliotheque-la-temporaire.html' target='_blank'>La Temporaire</a>. Un poste dédié à la consultation des thèses à accès restreint y est disponible.</p><p><b>L'impression, l'envoi par mail et la copie sur clé USB ne sont pas possibles, seule la lecture sur place est autorisée.</b></p><p>Afin de faciliter la consultation sur ce poste, notez : </p><ul><li>L'année de soutenance</li><li>Le nom du docteur</li></ul>"
+      addField "LIE.a.http://scd.u-bordeaux-montaigne.fr/these/acces_reserve.php"
+end
+
+#Cas des thèses sous embargo
+rule "Thèses sous embargo"
+priority 5
+when
+    ((exists "310.a.Thèse soumise à l'embargo de l'auteur*") OR (exists "371.a.Thèse soumise à l'embargo de l'auteur*"))
+then
+      copyField "310.a" to "NOT.a"  if (exists "310.a")
+      copyField "371.a" to "NOT.a"  if (exists "371.a")
+      suffix "NOT.a" with ". Consultable sur place à l'Université Bordeaux Montaigne"
+      addField "LIE.a.http://scd.u-bordeaux-montaigne.fr/these/acces_reserve.php"
+end
+
+#Cas des thèses confidentielles
+rule "Thèses confidentielles"
+priority 4
+when
+    ((exists "310.a.Thèse confidentielle*") OR (exists "371.a.Thèse confidentielle*"))
+then
+      copyField "310.a" to "NOT.a"  if (exists "310.a")
+      copyField "371.a" to "NOT.a"  if (exists "371.a")
+      suffix "NOT.a" with ". Pas d’accès"
+      copyField "033.a" to "LIE.a"  if (exists "033.a")
+end
+
+#Cas des thèses partielles
+rule "Thèses partielles"
+priority 3
+when
+    ((exists "856.z.Accès au texte intégral de la version partielle"))
+then
+      addField "NOT.a.Accès au texte intégral de la version partielle. La version complète est consultable sur place à l’Université Bordeaux Montaigne"
+      copyField "856.u" to "LIE.a"  if (exists "856.z.Accès au texte intégral de la version partielle")
+end
