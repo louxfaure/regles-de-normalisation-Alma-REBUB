@@ -62,6 +62,10 @@ then
   copyField "035.a" to "999.a"  if (exists "035.a.(PPN)*")
   replaceContents "999.a.(PPN)" with ""
   
+  #On transfert le PPN valide en 999 pour exploitation statistique
+  copyField "035.a" to "999.a"  if (exists "035.a.(PPN)*")
+  replaceContents "999.a.(PPN)" with ""
+  
   #NNT en 035
   prefix "029.b" with "(NNT)"
   copyField "029.b" to "035.a" 
