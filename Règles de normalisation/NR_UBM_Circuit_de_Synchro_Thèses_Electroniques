@@ -1,0 +1,56 @@
+##########################################
+###THESES CREATIONS DES INVENTAIRES####
+##########################################
+
+#Cas des thèses accessibles
+rule "Thèses accessibles"
+priority 7
+when
+    ((exists "856.u") AND (not exists "310.a") AND (not exists "371.a") AND (not exists "856.z.Acc*s r*serv* au texte int*gral")  AND (not exists "856.z.*version partielle"))
+then
+    copyField "856.u" to "LIE.a"  if (exists "856.q")
+end
+
+#Cas des thèses en accès restreint 
+rule "Thèses en accès restreint"
+priority 6
+when
+    ((exists "856.z.Acc*s r*serv* au texte int*gral") and (not exists "856.z.*version partielle") )
+then
+      addField "NOT.a.<h1>Thèse en accès limité</h1> <p>L'auteur de cette thèse n'a pas autorisé la diffusion Internet de sa thèse ou l'a soumise à un embargo avant sa diffusion.</p><p>Pour la consulter, vous devez vous rendre à la bibliothèque <a href='https://www.u-bordeaux-montaigne.fr/fr/documentation/vos-bibliotheques/bibliotheque-la-temporaire.html' target='_blank'>La Temporaire</a>. Un poste dédié à la consultation des thèses à accès restreint y est disponible.</p><p><b>L'impression, l'envoi par mail et la copie sur clé USB ne sont pas possibles, seule la lecture sur place est autorisée.</b></p><p>Afin de faciliter la consultation sur ce poste, notez : </p><ul><li>L'année de soutenance</li><li>Le nom du docteur</li></ul>"
+      addField "LIE.a.http://scd.u-bordeaux-montaigne.fr/these/acces_reserve.php"
+end
+
+#Cas des thèses sous embargo
+rule "Thèses sous embargo"
+priority 5
+when
+    ((exists "310.a.*embargo*") OR (exists "371.a.*embargo*"))
+then
+      copyField "310.a" to "NOT.a"  if (exists "310.a")
+      copyField "371.a" to "NOT.a"  if (exists "371.a")
+      suffix "NOT.a" with ". Consultable sur place à l'Université Bordeaux Montaigne"
+      addField "LIE.a.http://scd.u-bordeaux-montaigne.fr/these/acces_reserve.php"
+end
+
+#Cas des thèses confidentielles
+rule "Thèses confidentielles"
+priority 4
+when
+    ((exists "310.a.*confidentielle*") OR (exists "371.a.*confidentielle*"))
+then
+      copyField "310.a" to "NOT.a"  if (exists "310.a")
+      copyField "371.a" to "NOT.a"  if (exists "371.a")
+      suffix "NOT.a" with ". Pas d’accès"
+      copyField "033.a" to "LIE.a"  if (exists "033.a")
+end
+
+#Cas des thèses partielles
+rule "Thèses partielles"
+priority 3
+when
+    ((exists "856.z.* version partielle"))
+then
+      addField "NOT.a.Accès au texte intégral de la version partielle. La version complète est consultable sur place à l’Université Bordeaux Montaigne"
+      copyField "856.u" to "LIE.a"  if (exists "856.z.*version partielle")
+end
