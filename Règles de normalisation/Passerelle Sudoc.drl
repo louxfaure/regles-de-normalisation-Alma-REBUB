@@ -64,9 +64,12 @@ then
   replaceContents "999.a.(PPN)" with ""
   
   #NNT en 035
-  prefix "029.b" with "(NNT)"
-  copyField "029.b" to "035.a" 
-  replaceContents "029.b.(NNT)" with ""
+  copyField "029.b" to "NNT.a" 
+  replaceContents "NNT.a. (NNT)" with ""
+  replaceContents "NNT.a. (thèse d'exercice)" with ""
+  prefix "NNT.a" with "(NNT)"
+  copyField "NNT.a" to "035.a" 
+  removeField "NNT"
 end
 
 rule "Si plusieurs champs 500 alors on empêche la fusion"
