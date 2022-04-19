@@ -1,0 +1,6 @@
+rule "Règle d'identification Thèses UBM"
+when
+     (not exists "029.b.*BOR3*")
+then
+	set indication."true"
+end
