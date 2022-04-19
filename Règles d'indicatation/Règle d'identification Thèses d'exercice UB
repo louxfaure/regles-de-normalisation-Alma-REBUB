@@ -1,0 +1,6 @@
+rule "Règle d'identification Thèses d'exercice UB"
+when
+      (not exists "029.b.*BORD*(thèse d'exercice)")
+then
+	set indication."true"
+end
