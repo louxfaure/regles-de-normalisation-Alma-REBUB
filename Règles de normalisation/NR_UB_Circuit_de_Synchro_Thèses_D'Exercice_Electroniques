@@ -1,0 +1,22 @@
+##########################################
+###THESES D'EXERCICE CREATIONS DES INVENTAIRES####
+##########################################
+
+#Cas des thèses d'exercices accessibles
+rule "Thèses d'exercices accessibles"
+priority 4
+when
+    ( exists "856.u.https://dumas.ccsd.cnrs.fr/*")
+then
+    copyField "856.u" to "LIE.a"  if (exists "856.q")
+end
+
+#Cas des thèses d'exercices en accès restreint
+rule "Thèses d'exercices en accès restreint"
+priority 3
+when
+    ( exists "856.u.https://oskar-bordeaux.fr*")
+then
+    copyField "856.u" to "LIE.a"  if (exists "856.q")
+    addField "NOT.a.L'accès à la ressource est réservé aux usagers de la communauté universitaire de Bordeaux"
+end
