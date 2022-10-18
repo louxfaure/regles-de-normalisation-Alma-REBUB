@@ -19,8 +19,6 @@ then
   removeControlField "009"
   removeField "PPN"
 
-  #Remplace la 214 par une 210
-  copyField "214" to "210"
  
   #Mise en forme des 4## pour liens entre notices
   changeSubField "4**.0" to "1"
