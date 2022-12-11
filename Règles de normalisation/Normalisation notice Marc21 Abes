@@ -33,8 +33,17 @@ when
 then
  replaceControlContents "008.{23,1}" with "o"
 end
-rule "On transfert le PPN valide en 999 pour exploitation statistique"
+rule "On fait en sorte que le 035 contenant le PPN apparait en 1er"
 priority 07
+when
+  (TRUE)
+then
+    removeField "999"
+  changeField "035" to "999" if (not exists "035.a.(PPN)*")
+  changeField "999" to "035" 
+end
+rule "On transfert le PPN valide en 999 pour exploitation statistique"
+priority 06
 when
   (TRUE)
 then
@@ -42,12 +51,11 @@ then
   replaceContents "999.a.(PPN)" with ""
 end
 rule "Mise en forme des 7## pour liens entre notices"
-priority 06
+priority 05
 when
   (TRUE)
 then
   replaceContents "76*.w.(ABES)" with "(PPN)"
   replaceContents "77*.w.(ABES)" with "(PPN)"
   replaceContents "78*.w.(ABES)" with "(PPN)"
-  
 end
