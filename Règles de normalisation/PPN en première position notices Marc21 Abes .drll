@@ -1,0 +1,17 @@
+rule "On fait en sorte que le 035 contenant le PPN apparait en 1er"
+priority 10
+when
+  (TRUE)
+then
+  removeField "999"
+  changeField "035" to "999" if (not exists "035.a.(PPN)*")
+  changeField "999" to "035" 
+end
+rule "On transfert le PPN valide en 999 pour exploitation statistique"
+priority 09
+when
+  (TRUE)
+then
+  copyField "035.a" to "999.a"  if (exists "035.a.(PPN)*")
+  replaceContents "999.a.(PPN)" with ""
+end
