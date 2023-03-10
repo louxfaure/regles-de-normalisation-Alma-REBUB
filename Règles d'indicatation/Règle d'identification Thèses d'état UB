@@ -1,6 +1,6 @@
 rule "Règle d'identification Thèses UB"
 when
-     (not exists "029.b.*BORD*(NNT)")
+     (not exists "029.b.*BORD*")
 then
 	set indication."true"
 end
