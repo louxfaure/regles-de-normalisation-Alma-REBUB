@@ -61,9 +61,8 @@ then
   replaceContents "999.a.(PPN)" with ""
   
   #NNT en 035
-  copyField "029.b" to "NNT.a" 
-  replaceContents "NNT.a. (NNT)" with ""
-  replaceContents "NNT.a. (thèse d'exercice)" with ""
+  copyField "029.b" to "NNT.a"
+  copyField "029.e" to "NNT.a"
   prefix "NNT.a" with "(NNT)"
   copyField "NNT.a" to "035.a" 
   removeField "NNT"
