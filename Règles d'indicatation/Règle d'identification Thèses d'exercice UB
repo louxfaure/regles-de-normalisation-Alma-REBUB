@@ -1,6 +1,6 @@
-rule "Règle d'identification Thèses d'exercice UB"
+rule "Règle d'identification Thèses UB"
 when
-      (exists "029.b" and not exists "029.b.*BORD*(thèse d'exercice)")
+     (exists "029.e")
 then
 	set indication."true"
 end
