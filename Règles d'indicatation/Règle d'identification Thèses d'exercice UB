@@ -1,6 +1,6 @@
 rule "Règle d'identification Thèses d'exercice UB"
 when
-          ((not exists "029.e.*BORD*") OR ((exists "029.e.*BORD*") AND (not exists "930.b.335229906")))
+          ((not exists "029.e.*BORD*") OR ((exists "029.e.*BORD*") AND (not exists "930.b.335229901")))
 then
 	set indication."true"
 end
