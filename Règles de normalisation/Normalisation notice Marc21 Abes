@@ -19,26 +19,12 @@ then
   removeControlField "009"
   removeField "PPN"
 end
-rule "Corrige le leader"
-priority 09
-when
- (existsControl "LDR.{6,1}.m")
-then
- replaceControlContents "LDR.{6,1}" with "a"
-end
-rule "Corrige le 008"
-priority 08
-when
-  (TRUE)
-then
- replaceControlContents "008.{23,1}" with "o"
-end
 rule "On fait en sorte que le 035 contenant le PPN apparait en 1er"
 priority 07
 when
   (TRUE)
 then
-    removeField "999"
+  removeField "999"
   changeField "035" to "999" if (not exists "035.a.(PPN)*")
   changeField "999" to "035" 
 end
