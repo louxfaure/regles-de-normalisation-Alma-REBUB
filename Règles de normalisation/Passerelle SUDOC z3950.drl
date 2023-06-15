@@ -2,70 +2,63 @@ rule "PasserelleSUDOC"
 when
  (TRUE)
 then
-  removeField "999"
-  #Transfert et mef des PPN en 035 $a et $z (PPN erronnés)
-  addControlField "009.PPN"
-  addSystemNumber "035.a" from "001" prefixed by "009"
-  prefix "035.a" with "(PPN)" if (exists "035.9.sudoc")
-  changeSubField "035.a" to "z" if (exists "035.9.sudoc")
-  changeField "035" to "999" if (exists "035.a.(PPN)*")
-  changeField "035" to "999" if (exists "035.9.sudoc")   
-  #On ne conserve que les 035 PPN
-  removeField "035"
-  combineFields "999" excluding "9"
-  removeSubField "999.9"
-  changeField "999" to "035"
-  removeControlField "009"
-  removeField "PPN"
+    #Nettoyage des données de niveau 1 et 2
+    removeField "9*"
+    removeField "0**" if (exists "0**.5") 
+    removeField "3**" if (exists "3**.5") 
+    removeField "4**" if (exists "4**.5")
+    removeField "5**" if (exists "5**.5") 
+    removeField "6**" if (exists "6**.5")
+    removeField "7**" if (exists "7**.5") 
+    removeField "8**" if (exists "8**.5") 
+    
+    #Transfert et mef des PPN en 035 $a et $z (PPN erronnés) et suppression des autres 035
+    addControlField "009.PPN"
+    addSystemNumber "035.a" from "001" prefixed by "009"
+    prefix "035.a" with "(PPN)" if (exists "035.9.sudoc")
+    changeSubField "035.a" to "z" if (exists "035.9.sudoc")
+    changeField "035" to "999" if (exists "035.a.(PPN)*")
+    changeField "035" to "999" if (exists "035.9.sudoc")   
+    combineFields "999" excluding "9"
+    removeSubField "999.9"
+    removeField "035"
+    removeControlField "009"
+    changeField "999" to "035"
+    
+    #Mise en forme des 4## pour liens entre notices
+    changeSubField "4**.0" to "1"
+    prefix "4**.1" with "001(PPN)"
+    
+    #Nettoyage des caractères de rejets des articles dans les titres
+    replaceContents "2**.*.\u0098" with "<<"
+    replaceContents "2**.*.\u009c" with ">>"
+    replaceContents "4**.*.\u0098" with "<<"
+    replaceContents "4**.*.\u009c" with ">>"
+    replaceContents "046.v.\u0098" with "<<"
+    replaceContents "046.v.\u009c" with ">>"
+    replaceContents "3**.*.\u0098" with "<<"
+    replaceContents "3**.*.\u009c" with ">>"
+    replaceContents "5**.*.\u0098" with "<<"
+    replaceContents "5**.*.\u009c" with ">>"
+    replaceContents "6**.*.\u0098" with "<<"
+    replaceContents "6**.*.\u009c" with ">>"
+    replaceContents "7**.*.\u0098" with "<<"
+    replaceContents "7**.*.\u009c" with ">>"
 
+    removeField "801" if (not exists "801.b.ABES")
+    removeControlField "001"
+    replaceContents "200.d.=" with ""
+    replaceContents "4**.l.=" with ""
 
-  #Mise en forme des 4## pour liens entre notices
-  changeSubField "4**.0" to "1"
-  prefix "4**.1" with "001(PPN)"
- 
-  #Nettoyage des caractères de rejets des articles dans les titres
-  replaceContents "2**.*.\u0098" with "<<"
-  replaceContents "2**.*.\u009c" with ">>"
-  replaceContents "4**.*.\u0098" with "<<"
-  replaceContents "4**.*.\u009c" with ">>"
-  replaceContents "046.v.\u0098" with "<<"
-  replaceContents "046.v.\u009c" with ">>"
-  replaceContents "3**.*.\u0098" with "<<"
-  replaceContents "3**.*.\u009c" with ">>"
-  replaceContents "5**.*.\u0098" with "<<"
-  replaceContents "5**.*.\u009c" with ">>"
-  replaceContents "6**.*.\u0098" with "<<"
-  replaceContents "6**.*.\u009c" with ">>"
-  replaceContents "7**.*.\u0098" with "<<"
-  replaceContents "7**.*.\u009c" with ">>"
-  #Nettoyage des 801
-  removeField "801" if (exists "801.b.UBS")
-  removeField "801" if (exists "801.b.OCLC")
-  removeField "801" if (exists "801.b.BN")
-  removeField "801" if (exists "801.b.SF")
-  removeField "801" if (exists "801.b.Electre")
-  removeField "801" if (exists "801.b.AUROC")
-  removeField "801" if (exists "801.b.ISSN")
-  
-  #Suppression de tous les champs 9## attente validation IEP
-  #removeField "9*"
-  #On supprime le 001 pour qu'il ne soit pas copié en 035
-  removeControlField "001"
+    #Copie du PPN en 999
+    copyField "035.a" to "999.a"  if (exists "035.a.(PPN)*")
+    replaceContents "999.a.(PPN)" with ""
 
-  #Alma traduit déjà le ss-chp d en = on efface celui envoyé par l'Abes
-  replaceContents "200.d.=" with ""
-  replaceContents "4**.l.=" with ""
-  
-  #On transfert le PPN valide en 999 pour exploitation statistique
-  copyField "035.a" to "999.a"  if (exists "035.a.(PPN)*")
-  replaceContents "999.a.(PPN)" with ""
-  
-  #On transfert le PPN valide en 999 pour exploitation statistique
-  copyField "035.a" to "999.a"  if (exists "035.a.(PPN)*")
-  replaceContents "999.a.(PPN)" with ""
-  
-  #NNT en 035
-  prefix "029.b" with "(NNT)"
-  copyField "029.b" to "035.a" 
-  replaceContents "029.b.(NNT)" with ""
+    #NNT en 035
+    copyField "029.b" to "NNT.a" 
+    replaceContents "NNT.a. (NNT)" with ""
+    replaceContents "NNT.a. (thèse d'exercice)" with ""
+    prefix "NNT.a" with "(NNT)"
+    copyField "NNT.a" to "035.a" 
+    removeField "NNT"
 end
