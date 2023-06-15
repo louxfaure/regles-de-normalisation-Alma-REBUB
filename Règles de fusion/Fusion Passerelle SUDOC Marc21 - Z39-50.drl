@@ -1,0 +1,12 @@
+rule "Fusion Passerelle SUDOC Marc21 - Z39-50"
+when
+   merge
+  then
+       # On conserve les autres numéros systèmes à l'exeption des PPNs
+        add MARC."035"
+       # On conserve les résumés et les TOC si la notice SUDOC n'en possède pas
+        add MARC."505" if does not exists
+        add MARC."505" if does not exists
+        #On conserve les sujets
+        add MARC."6"XX
+end
