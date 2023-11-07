@@ -167,6 +167,7 @@ then
   removeSubField "930.n"
   removeSubField "930.s"
   removeSubField "930.a"
+  removeSubField "930.b"
   removeSubField "930.4"
   removeSubField "930.u"
   removeSubField "930.z"
