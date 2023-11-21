@@ -61,6 +61,8 @@ then
   ##Création du 856
   copyField "INV" to "856" if(exists "INV.{*,*}.u")
   changeSubField "856.n" to "2"
+  copyField "INV.n" to "856.x" 
+  combineFields "856" excluding "" 
   ##Création du 930
   copyField "INV" to "930"
   ##Création du 955
@@ -104,6 +106,7 @@ then
   removeSubField "856.u"
   removeSubField "856.z"
   removeSubField "856.7"
+  changeSubField "856.n" to "x"
   addSubField "856.2.Ressource non disponible"
   moveSubfieldsToEndOfField  "856" "8"
   ##Création du 930
@@ -167,13 +170,12 @@ then
   removeSubField "930.n"
   removeSubField "930.s"
   removeSubField "930.a"
-  removeSubField "930.b"
   removeSubField "930.4"
   removeSubField "930.u"
   removeSubField "930.z"
   removeSubField "930.7"
  #Injection du RCR
-  addSubField "930.b.330009999"
+  addSubField "930.b.335229910"
  
   moveSubfieldsToEndOfField  "930" "8"
  ### Nettoyage du 955
