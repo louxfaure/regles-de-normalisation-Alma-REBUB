@@ -9,7 +9,7 @@ end
 rule "Thèses en accès intranet"
 priority 6
 when
-    ((exists "856.z.Acc*s r*serv* au texte int*gral") and (not exists "856.z.*version partielle") and (exists "856.u.*"))
+    ((exists "856.z.Acc*s r*serv* au texte int*gral") and (not exists "856.z.*version partielle") and (exists "856.u.*") )
 then
     addField "NOT.a.<h1>Thèse en accès limité</h1>"
     copyField "856.u" to "LIE.a"
@@ -19,7 +19,7 @@ end
 rule "Thèses en accès restreint"
 priority 7
 when
-    ((exists "856.z.Acc*s r*serv* au texte int*gral") and (not exists "856.z.*version partielle") and (exists "856.u.http://scd.u-bordeaux-montaigne.fr/these/acces_reserve.php"))
+    ((exists "856.z.Acc*s r*serv* au texte int*gral") and (not exists "856.z.*version partielle") and (exists "856.u.http://scd.u-bordeaux-montaigne.fr/these/acces_reserve.php") or not exists "856.u.*")
 then
       addField "NOT.a.<h1>Thèse en accès limité</h1> <p>L'auteur de cette thèse n'a pas autorisé la diffusion Internet de sa thèse ou l'a soumise à un embargo avant sa diffusion.</p><p>Pour la consulter, vous devez vous rendre à la bibliothèque <a href='https://www.u-bordeaux-montaigne.fr/fr/documentation/vos-bibliotheques/bibliotheque-rigoberta-menchu.html' target='_blank'>Rigoberta Menchú</a>. Un poste dédié à la consultation des thèses à accès restreint y est disponible.</p><p><b>L'impression, l'envoi par mail et la copie sur clé USB ne sont pas possibles, seule la lecture sur place est autorisée.</b></p><p>Afin de faciliter la consultation sur ce poste, notez : </p><ul><li>L'année de soutenance</li><li>Le nom du docteur</li></ul>"
       addField "LIE.a.http://scd.u-bordeaux-montaigne.fr/these/acces_reserve.php"
