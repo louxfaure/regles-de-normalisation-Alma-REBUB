@@ -1,5 +1,5 @@
 rule "Thèses accessibles"
-priority 7
+priority 5
 when
     ((exists "856.u") AND (not exists "310.a") AND (not exists "371.a") AND (not exists "856.z.Acc*s r*serv* au texte int*gral")  AND (not exists "856.z.*version partielle"))
 then
