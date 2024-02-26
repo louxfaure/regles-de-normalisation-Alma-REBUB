@@ -1,4 +1,6 @@
 rule "PasserelleSUDOC"
+priority 10
+
 when
  (TRUE)
 then
@@ -45,7 +47,9 @@ then
     replaceContents "7**.*.\u0098" with "<<"
     replaceContents "7**.*.\u009c" with ">>"
 
-    removeField "801" if (not exists "801.b.ABES")
+    removeField "801" if (not exists "801.b.Abes")
+    #Modification du champs 801 pour index Agence de catalogage originale
+    changeSecondIndicator "801" to "0" if (exists "801.b.Abes")
     removeControlField "001"
     replaceContents "200.d.=" with ""
     replaceContents "4**.l.=" with ""
@@ -61,4 +65,12 @@ then
     prefix "NNT.a" with "(NNT)"
     copyField "NNT.a" to "035.a" 
     removeField "NNT"
+end
+
+rule "S'il existe des 010.9 on les transforme en 010.z pour index ISBN"
+priority 8
+ when
+         exists "010"
+     then
+          changeSubField "010.9" to "z"  if (exists "010.9")
 end
