@@ -18,7 +18,7 @@ then
   changeField "999" to "035"
   removeControlField "009"
   removeField "PPN"
-
+ 
   #Mise en forme des 4## pour liens entre notices
   changeSubField "4**.0" to "1"
   prefix "4**.1" with "001(PPN)"
@@ -46,6 +46,8 @@ then
   removeField "801" if (exists "801.b.Electre")
   removeField "801" if (exists "801.b.AUROC")
   removeField "801" if (exists "801.b.ISSN")
+ #Modification du champs 801 pour index Agence de catalogage originale
+  changeSecondIndicator "801" to "0" if (exists "801.b.Abes")
   
   #Suppression de tous les champs 9## attente validation IEP
   #removeField "9*"
@@ -62,7 +64,7 @@ then
   
   #NNT en 035
   copyField "029.b" to "NNT.a"
-  copyField "029.e" to "NNT.a"
+  copyField "029.e" to "NNT.a" 
   prefix "NNT.a" with "(NNT)"
   copyField "NNT.a" to "035.a" 
   removeField "NNT"
@@ -74,4 +76,12 @@ when
    (existsMoreThanOnce "500.a")
 then
    addField "995.a.y"
+end
+
+rule "S'il existe des 010.9 on les transforme en 010.z pour index ISBN"
+priority 8
+    when
+         exists "010"
+     then
+          changeSubField "010.9" to "z"  if (exists "010.9")
 end
