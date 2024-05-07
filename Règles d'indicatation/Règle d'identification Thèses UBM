@@ -1,6 +1,6 @@
 rule "Règle d'identification Thèses UBM"
 when
-    ((not exists "029.b.*BOR3*") OR ((exists "029.b.*BOR3*") AND (not exists "930.b.335229906")))
+    ((not exists "029.b.*BOR3*") OR ((exists "029.b.*BOR3*") AND (not exists "930.b.335229906")) OR (not exists "029.b.*BORUL*"))
 then
 	set indication."true"
 end
