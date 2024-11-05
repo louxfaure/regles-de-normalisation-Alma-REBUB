@@ -11,18 +11,8 @@ priority 6
 when
     ((exists "856.z.Acc*s r*serv* au texte int*gral") and (not exists "856.z.*version partielle") and (exists "856.u.*") )
 then
-    addField "NOT.a.<h1>Thèse en accès limité</h1>"
+    addField "NOT.a.<h1>Thèse en accès limité</h1><p>accessible à distance sur authentification pour les membres de l'Université Bordeaux Montaigne, ou sur place sur les ordinateurs disponibles dans les bibliothèques (campus de Pessac).</p><p>L'ensemble de la collection des thèses de l'Université Bordeaux Montaigne a été numérisée et est accessible au format numérique. Vous êtes docteur de notre université et avez des questions sur la diffusion de votre thèse ? Nous serons ravis d'y répondre : <a href='https://extranet.u-bordeaux-montaigne.fr/rita_fo/?num_cg=59&num_form=1'>contactez-nous.</a></p>"
     copyField "856.u" to "LIE.a"
-end
-
-#Cas des thèses en accès restreint 
-rule "Thèses en accès restreint"
-priority 7
-when
-    ((exists "856.z.Acc*s r*serv* au texte int*gral") and (not exists "856.z.*version partielle") and (exists "856.u.http://scd.u-bordeaux-montaigne.fr/these/acces_reserve.php") or not exists "856.u.*")
-then
-      addField "NOT.a.<h1>Thèse en accès limité</h1> <p>L'auteur de cette thèse n'a pas autorisé la diffusion Internet de sa thèse ou l'a soumise à un embargo avant sa diffusion.</p><p>Pour la consulter, vous devez vous rendre à la bibliothèque <a href='https://www.u-bordeaux-montaigne.fr/fr/documentation/vos-bibliotheques/bibliotheque-rigoberta-menchu.html' target='_blank'>Rigoberta Menchú</a>. Un poste dédié à la consultation des thèses à accès restreint y est disponible.</p><p><b>L'impression, l'envoi par mail et la copie sur clé USB ne sont pas possibles, seule la lecture sur place est autorisée.</b></p><p>Afin de faciliter la consultation sur ce poste, notez : </p><ul><li>L'année de soutenance</li><li>Le nom du docteur</li></ul>"
-      addField "LIE.a.http://scd.u-bordeaux-montaigne.fr/these/acces_reserve.php"
 end
 
 #Cas des thèses sous embargo
@@ -33,8 +23,9 @@ when
 then
       copyField "310.a" to "NOT.a"  if (exists "310.a")
       copyField "371.a" to "NOT.a"  if (exists "371.a")
-      suffix "NOT.a" with ". Consultable sur place à l'Université Bordeaux Montaigne"
-      addField "LIE.a.http://scd.u-bordeaux-montaigne.fr/these/acces_reserve.php"
+      suffix "NOT.a" with ". Consultation à distance réservée aux membres de la communauté universitaire. <a href=https://www.u-bordeaux-montaigne.fr/fr/documentation/informations-pratiques/diffuser-sa-these.html'>En savoir plus</a>"
+      copyField "033.a" to "LIE.a"  if (exists "033.a")
+      suffix "LIE.a" with "/document"
 end
 
 #Cas des thèses confidentielles
@@ -45,7 +36,7 @@ when
 then
       copyField "310.a" to "NOT.a"  if (exists "310.a")
       copyField "371.a" to "NOT.a"  if (exists "371.a")
-      suffix "NOT.a" with ". Pas d’accès"
+      suffix "NOT.a" with ". <span class='these_ubm_pas_acces'>Pas d’accès</a>"
       copyField "033.a" to "LIE.a"  if (exists "033.a")
 end
 
