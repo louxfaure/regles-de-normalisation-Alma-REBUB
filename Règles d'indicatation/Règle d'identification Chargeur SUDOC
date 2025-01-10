@@ -1,6 +1,6 @@
-rule "Règle d'identification Chargeur SUDOC iltre les notices électroniques"
+rule "Regle Identification Chargeur Notices SUDOC"
 when
-     (exists "856.u.https://extranet.u-bordeaux-montaigne.fr/memoires/*" or exists "930.5.335229901*" or exists "930.5.335229906*" or exists  "930.5.335229907*")
+     (exists "930.5.335229901*" or exists "930.5.335229906*" or exists  "930.5.335229907*"  or exists  "930.5.335229910*" or exists  "930.5.335229909*" or exists  "930.5.333189901*"  or exists  "930.5.330639901*")
 then
 	set indication."true"
 end
