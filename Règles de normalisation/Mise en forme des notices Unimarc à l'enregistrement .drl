@@ -1,0 +1,181 @@
+rule "Structure titre"
+# https://rebub.u-bordeaux.fr/index.php/wiki/configuration/primo/normalisation-indexation/affichage-du-titre/
+priority 10
+when
+(true)
+then
+   removeField "TIT"
+   copyField "200" to "TIT"
+   prefix "TIT.a" with "__ ; "
+   prefix "TIT.c" with ". "
+   prefix "TIT.d" with " = "
+   prefix "TIT.e" with " : "
+   prefix "TIT.h" with ". "
+   prefix "TIT.i" with ",  "
+   prefix "TIT.f" with " /  "
+   prefix "TIT.g" with " ;  "
+   replaceContentsOnlyFirst "TIT.a.__ ; " with ""
+   replaceContents "TIT.a.__" with ""
+end
+
+rule "Corrige PPN"
+# Corrige les erreurs les plus fréquentes sur la saisie des PPN
+priority 9
+when
+(true)
+then
+   replaceContents "035.a.p" with "P" if (exists "035.{*,*}.a")
+   replaceContents "035.a.n" with "N" if (exists "035.{*,*}.a")
+   replaceContents "035.a.PPP" with "PPN" if (exists "035.{*,*}.a")
+   replaceContents "035.a.PNN" with "PPN" if (exists "035.{*,*}.a")
+   replaceContents "035.a.NPP" with "PPN" if (exists "035.{*,*}.a")
+   replaceContents "035.a.NNN" with "PPN" if (exists "035.{*,*}.a")
+   replaceContents "035.a.PPN" with "(PPN)" if (exists "035.{*,*}.a")
+   replaceContents "035.a.((" with "(" if (exists "035.{*,*}.a")
+   replaceContents "035.a.))" with ")" if (exists "035.{*,*}.a")
+   replaceContents "035.a. " with "" if (exists "035.{*,*}.a")
+end
+
+
+rule "Création TOC - 359 ind1=2 - V2"
+# copie le contenu de la 359 si elle contient un ind1=2 dans le champs TOC
+# ajoute des balises codées qui seront transformées en HTML dans une regle de normalisation primo
+when
+(exists "359.{2,-}.v") OR (exists "359.{2,-}.c") OR (exists "359.{2,-}.d") OR (exists "359.{2,-}.e") OR (exists "359.{2,-}.f") OR (exists "359.{2,-}.g") OR (exists "359.{2,-}.h") OR (exists "359.{2,-}.i")
+then
+   removeField "TOC"
+   copyField "359" to "TOC"
+prefix "TOC.v" with "@openspan class='vol'>"
+	 suffix "TOC.v" with "@closespan"
+prefix "TOC.p" with "@openspan class='page'>"
+	 suffix "TOC.p" with "@closespan"
+   prefix "TOC.b" with "@openspan class='toc1'>"
+	 suffix "TOC.b" with "@closespan"
+prefix "TOC.c" with "@openspan class='toc2'>"
+	 suffix "TOC.c" with "@closespan"
+prefix "TOC.d" with "@openspan class='toc3'>"
+	 suffix "TOC.d" with "@closespan"
+prefix "TOC.e" with "@openspan class='toc4'>"
+	 suffix "TOC.e" with "@closespan"
+prefix "TOC.f" with "@openspan class='toc5'>"
+	 suffix "TOC.f" with "@closespan"
+prefix "TOC.g" with "@openspan class='toc6'>"
+	 suffix "TOC.g" with "@closespan"
+prefix "TOC.h" with "@openspan class='toc7'>"
+	 suffix "TOC.h" with "@closespan"
+prefix "TOC.i" with "@openspan class='toc8'>"
+	 suffix "TOC.i" with "@closespan"  
+end
+
+rule "Création TOC - 359 ind1=2 - V2 $b tout seul"
+when
+(exists "359.{2,-}.b") AND ((not exists "359.{2,-}.c") OR (not exists "359.{2,-}.d") OR (not exists "359.{2,-}.e") OR (not exists "359.{2,-}.f") OR (not exists "359.{2,-}.g") OR (not exists "359.{2,-}.h") OR (not exists "359.{2,-}.i"))
+then
+   removeField "TOC"
+   copyField "359" to "TOC"
+prefix "TOC.v" with "@openspan class='vol'>"
+	 suffix "TOC.v" with "@closespan"
+prefix "TOC.p" with "@openspan class='page'>"
+	 suffix "TOC.p" with "@closespan"
+   prefix "TOC.b" with "@openspan class='toc1_alone'>"
+	 suffix "TOC.b" with "@closespan"
+end
+
+# Création des urls pour les vignettes des documents dans Primo VE 
+
+rule "Notice a un 073 Lien Amazon "
+priority 09
+when
+    exists "073.a" AND not exists "901.a.AMAZON"
+then
+    copyField "073.a" to "AMA.u"
+    addSubField "AMA.a.AMAZON"
+    prefix "AMA.u" with "https://images-na.ssl-images-amazon.com/images/P/"
+    suffix "AMA.u" with ".jpg"
+    changeFirstIndicator "AMA" to "1"
+    changeField "AMA" to "901"
+end
+
+rule "Notice sans 073 Lien Amazon "
+priority 09
+when
+    not exists "073.a" AND 
+    exists "010.a" AND 
+    not exists "901.a.AMAZON"
+then
+    copyField "010.a" to "ISB.u"
+    replaceContents "ISB.u.-" with ""
+    replaceContents "ISB.u. " with ""
+    // Séquence où on teste l'isbn 13 
+    suffix "ISB.u" with "__"
+    replaceContents "ISB.u.^(.{13})_.*" with "!$1"
+    copyField "ISB" to "AMA" if (exists "ISB.u.!*")
+    replaceContents "AMA.u.!" with ""
+    // Formatage de l'URL
+    addSubField "AMA.a.AMAZON"
+    prefix "AMA.u" with "https://images-na.ssl-images-amazon.com/images/P/"
+    suffix "AMA.u" with ".jpg"
+    changeFirstIndicator "AMA" to "1"
+    changeField "AMA" to "901"
+end
+
+rule "Notice a un 073 Lien AbeBooks"
+priority 08
+when
+    exists "073.a" AND not exists "901.a.ABEBOOKS"
+then
+    copyField "073.a" to "ABE.u"
+    addSubField "ABE.a.ABEBOOKS"
+    prefix "ABE.u" with "https://pictures.abebooks.com/isbn/"
+    suffix "ABE.u" with ".jpg"
+    changeFirstIndicator "ABE" to "1"
+    changeField "ABE" to "901"
+end
+
+rule "Notice sans 073 Lien AbeBooks"
+priority 08
+when
+    not exists "073.a" AND 
+    exists "010.a" AND 
+    not exists "901.a.ABEBOOKS"
+then
+    copyField "ISB" to "ABE" if (exists "ISB.u.!*")
+    replaceContents "ABE.u.!" with ""
+    // Formatage de l'URL
+    addSubField "ABE.a.ABEBOOKS"
+    prefix "ABE.u" with "https://pictures.abebooks.com/isbn/"
+    suffix "ABE.u" with ".jpg"
+    changeFirstIndicator "ABE" to "1"
+    changeField "ABE" to "901"
+end
+
+rule "Notice a un 073 Lien DECITRE"
+priority 07
+when
+    exists "073.a" AND not exists "901.a.DECITRE"
+then
+    copyField "073.a" to "DEC.u"
+    addSubField "DEC.a.DECITRE"
+    prefix "DEC.u" with "https://products-images.di-static.com/image/jean-robert-touvron-histoire/"
+    suffix "DEC.u" with "-475x500-1.webp"
+    changeFirstIndicator "DEC" to "1"
+    changeField "DEC" to "901"
+end
+
+rule "Notice sans 073 Lien DECITRE"
+priority 07
+when
+    not exists "073.a" AND 
+    exists "010.a" AND 
+    not exists "901.a.DECITRE"
+then
+    copyField "ISB" to "DEC" if (exists "ISB.u.!*")
+    replaceContents "DEC.u.!" with ""
+    // Formatage de l'URL
+    addSubField "DEC.a.DECITRE"
+    prefix "DEC.u" with "https://products-images.di-static.com/image/jean-robert-touvron-histoire/"
+    suffix "DEC.u" with "-475x500-1.webp"
+    changeFirstIndicator "DEC" to "1"
+    changeField "DEC" to "901"
+    removeField "ISB"
+end
