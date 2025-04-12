@@ -81,8 +81,6 @@ prefix "TOC.p" with "@openspan class='page'>"
 	 suffix "TOC.b" with "@closespan"
 end
 
-# Création des urls pour les vignettes des documents dans Primo VE 
-
 rule "Notice a un 073 Lien Amazon "
 priority 09
 when
@@ -93,6 +91,7 @@ then
     prefix "AMA.u" with "https://images-na.ssl-images-amazon.com/images/P/"
     suffix "AMA.u" with ".jpg"
     changeFirstIndicator "AMA" to "1"
+    changeSecondIndicator "AMA" to "2"
     changeField "AMA" to "901"
 end
 
@@ -116,6 +115,7 @@ then
     prefix "AMA.u" with "https://images-na.ssl-images-amazon.com/images/P/"
     suffix "AMA.u" with ".jpg"
     changeFirstIndicator "AMA" to "1"
+    changeSecondIndicator "AMA" to "2"
     changeField "AMA" to "901"
 end
 
@@ -129,6 +129,7 @@ then
     prefix "ABE.u" with "https://pictures.abebooks.com/isbn/"
     suffix "ABE.u" with ".jpg"
     changeFirstIndicator "ABE" to "1"
+    changeSecondIndicator "ABE" to "3"
     changeField "ABE" to "901"
 end
 
@@ -146,6 +147,7 @@ then
     prefix "ABE.u" with "https://pictures.abebooks.com/isbn/"
     suffix "ABE.u" with ".jpg"
     changeFirstIndicator "ABE" to "1"
+    changeSecondIndicator "ABE" to "3"
     changeField "ABE" to "901"
 end
 
@@ -159,6 +161,7 @@ then
     prefix "DEC.u" with "https://products-images.di-static.com/image/jean-robert-touvron-histoire/"
     suffix "DEC.u" with "-475x500-1.webp"
     changeFirstIndicator "DEC" to "1"
+    changeSecondIndicator "DEC" to "4"
     changeField "DEC" to "901"
 end
 
@@ -176,7 +179,9 @@ then
     prefix "DEC.u" with "https://products-images.di-static.com/image/jean-robert-touvron-histoire/"
     suffix "DEC.u" with "-475x500-1.webp"
     changeFirstIndicator "DEC" to "1"
+    changeSecondIndicator "DEC" to "4"
     changeField "DEC" to "901"
+    removeField "ISB"
 end
 
 rule "Nettoyage"
