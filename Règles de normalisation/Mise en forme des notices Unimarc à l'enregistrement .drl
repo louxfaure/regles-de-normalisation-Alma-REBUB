@@ -177,5 +177,12 @@ then
     suffix "DEC.u" with "-475x500-1.webp"
     changeFirstIndicator "DEC" to "1"
     changeField "DEC" to "901"
+end
+
+rule "Nettoyage"
+priority 06
+when
+    exists "ISB"
+then
     removeField "ISB"
 end
