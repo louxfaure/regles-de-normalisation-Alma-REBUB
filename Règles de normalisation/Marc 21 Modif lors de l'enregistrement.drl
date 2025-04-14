@@ -1,0 +1,98 @@
+rule "On fait en sorte que le 035 contenant le PPN apparait en 1er"
+priority 10
+when
+  (TRUE)
+then
+  removeField "999"
+  changeField "035" to "999" if (not exists "035.a.(PPN)*")
+  changeField "999" to "035" 
+end
+rule "On transfert le PPN valide en 999 pour exploitation statistique"
+priority 09
+when
+  (TRUE)
+then
+  copyField "035.a" to "999.a"  if (exists "035.a.(PPN)*")
+  replaceContents "999.a.(PPN)" with ""
+end
+
+rule "Test ISBN 13 "
+priority 10
+when
+    exists "776.z"
+then
+    copyField "776.Z" to "ISB.u"
+    replaceContents "ISB.u.-" with ""
+    replaceContents "ISB.u. " with ""
+    // Séquence où on teste l'isbn 13 
+    suffix "ISB.u" with "__"
+    replaceContents "ISB.u.^(.{13})_.*" with "!$1"
+    //ISBN 10
+    copyField "776.z" to "ISD.u"
+    replaceContents "ISD.u.-" with ""
+    replaceContents "ISD.u. " with ""
+    suffix "ISD.u" with "__"
+    replaceContents "ISD.u.^(.{10})_.*" with "!$1"
+end
+
+rule "Lien Amazon "
+priority 09
+when
+    exists "776.z" AND 
+    not exists "901.a.AMAZON"
+then
+    copyField "ISB" to "AMA" if (exists "ISB.u.!*")
+    copyField "ISD" to "AMA" if (exists "ISD.u.!*")
+    replaceContents "AMA.u.!" with ""
+    // Formatage de l'URL
+    addSubField "AMA.a.AMAZON"
+    prefix "AMA.u" with "https://images-na.ssl-images-amazon.com/images/P/"
+    suffix "AMA.u" with ".jpg"
+    changeFirstIndicator "AMA" to "1"
+    changeSecondIndicator "AMA" to "2"
+    changeField "AMA" to "901"
+end
+
+rule "Lien AbeBooks"
+priority 08
+when
+    exists "776.z" AND 
+    not exists "901.a.ABEBOOKS"
+then
+    copyField "ISB" to "ABE" if (exists "ISB.u.!*")
+    replaceContents "ABE.u.!" with ""
+    // Formatage de l'URL
+    addSubField "ABE.a.ABEBOOKS"
+    prefix "ABE.u" with "https://pictures.abebooks.com/isbn/"
+    suffix "ABE.u" with ".jpg"
+    changeFirstIndicator "ABE" to "1"
+    changeSecondIndicator "ABE" to "3"
+    changeField "ABE" to "901"
+end
+
+rule "Lien DECITRE"
+priority 07
+when
+    exists "776.z" AND 
+    not exists "901.a.DECITRE"
+then
+    copyField "ISB" to "DEC" if (exists "ISB.u.!*")
+    replaceContents "DEC.u.!" with ""
+    // Formatage de l'URL
+    addSubField "DEC.a.DECITRE"
+    prefix "DEC.u" with "https://products-images.di-static.com/image/jean-robert-touvron-histoire/"
+    suffix "DEC.u" with "-475x500-1.webp"
+    changeFirstIndicator "DEC" to "1"
+    changeSecondIndicator "DEC" to "4"
+    changeField "DEC" to "901"
+    removeField "ISB"
+end
+
+rule "Nettoyage"
+priority 06
+when
+    (TRUE)
+then
+    removeField "ISB"
+    removeField "ISD"
+end
