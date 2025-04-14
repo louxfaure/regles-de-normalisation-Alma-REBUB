@@ -20,7 +20,7 @@ end
 
 rule "Corrige PPN"
 # Corrige les erreurs les plus fréquentes sur la saisie des PPN
-priority 9
+priority 09
 when
 (true)
 then
@@ -38,6 +38,7 @@ end
 
 
 rule "Création TOC - 359 ind1=2 - V2"
+priority 08
 # copie le contenu de la 359 si elle contient un ind1=2 dans le champs TOC
 # ajoute des balises codées qui seront transformées en HTML dans une regle de normalisation primo
 when
@@ -68,6 +69,7 @@ prefix "TOC.i" with "@openspan class='toc8'>"
 end
 
 rule "Création TOC - 359 ind1=2 - V2 $b tout seul"
+priority 07
 when
 (exists "359.{2,-}.b") AND ((not exists "359.{2,-}.c") OR (not exists "359.{2,-}.d") OR (not exists "359.{2,-}.e") OR (not exists "359.{2,-}.f") OR (not exists "359.{2,-}.g") OR (not exists "359.{2,-}.h") OR (not exists "359.{2,-}.i"))
 then
@@ -81,8 +83,28 @@ prefix "TOC.p" with "@openspan class='page'>"
 	 suffix "TOC.b" with "@closespan"
 end
 
+rule "Test ISBN 13 ISBN 10 "
+priority 06
+when
+    not exists "073.a" AND 
+    exists "010.a"
+then
+   //ISBN 13
+    copyField "010.a" to "ISB.u"
+    replaceContents "ISB.u.-" with ""
+    replaceContents "ISB.u. " with ""
+    suffix "ISB.u" with "__"
+    replaceContents "ISB.u.^(.{13})_.*" with "!$1"
+    //ISBN 10
+     copyField "010.a" to "ISD.u"
+    replaceContents "ISD.u.-" with ""
+    replaceContents "ISD.u. " with ""
+    suffix "ISD.u" with "__"
+    replaceContents "ISD.u.^(.{10})_.*" with "!$1"
+end
+
 rule "Notice a un 073 Lien Amazon "
-priority 09
+priority 05
 when
     exists "073.a" AND not exists "901.a.AMAZON"
 then
@@ -96,21 +118,17 @@ then
 end
 
 rule "Notice sans 073 Lien Amazon "
-priority 09
+priority 05
 when
     not exists "073.a" AND 
     exists "010.a" AND 
     not exists "901.a.AMAZON"
 then
-    copyField "010.a" to "ISB.u"
-    replaceContents "ISB.u.-" with ""
-    replaceContents "ISB.u. " with ""
-    // Séquence où on teste l'isbn 13 
-    suffix "ISB.u" with "__"
-    replaceContents "ISB.u.^(.{13})_.*" with "!$1"
     copyField "ISB" to "AMA" if (exists "ISB.u.!*")
+    copyField "ISD" to "AMA" if (exists "ISD.u.!*")
     replaceContents "AMA.u.!" with ""
-    // Formatage de l'URL
+  
+   // Formatage de l'URL
     addSubField "AMA.a.AMAZON"
     prefix "AMA.u" with "https://images-na.ssl-images-amazon.com/images/P/"
     suffix "AMA.u" with ".jpg"
@@ -120,7 +138,7 @@ then
 end
 
 rule "Notice a un 073 Lien AbeBooks"
-priority 08
+priority 04
 when
     exists "073.a" AND not exists "901.a.ABEBOOKS"
 then
@@ -134,7 +152,7 @@ then
 end
 
 rule "Notice sans 073 Lien AbeBooks"
-priority 08
+priority 04
 when
     not exists "073.a" AND 
     exists "010.a" AND 
@@ -152,7 +170,7 @@ then
 end
 
 rule "Notice a un 073 Lien DECITRE"
-priority 07
+priority 03
 when
     exists "073.a" AND not exists "901.a.DECITRE"
 then
@@ -166,7 +184,7 @@ then
 end
 
 rule "Notice sans 073 Lien DECITRE"
-priority 07
+priority 03
 when
     not exists "073.a" AND 
     exists "010.a" AND 
@@ -181,13 +199,13 @@ then
     changeFirstIndicator "DEC" to "1"
     changeSecondIndicator "DEC" to "4"
     changeField "DEC" to "901"
-    removeField "ISB"
 end
 
 rule "Nettoyage"
-priority 06
+priority 02
 when
-    exists "ISB"
+    (TRUE)
 then
     removeField "ISB"
+    removeField "ISD"
 end
