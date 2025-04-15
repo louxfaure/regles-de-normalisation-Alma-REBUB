@@ -9,5 +9,6 @@ then
   replaceContents "2**.*.\u2030" with ">>"
   copyField "856.u" to "901.u" if (exists "856.u.*media.electre-ng.com/images/*")
   addSubField "901.a.ELECTRE" if (exists "901.u.*media.electre-ng.com/images/*")
-  addSubField "901.x.Valide" if (exists "901.u.*media.electre-ng.com/images/*")
+  changeFirstIndicator "901" to "1" if (exists "901.u.*media.electre-ng.com/images/*")
+ changeSecondIndicator "901" to "1" if (exists "901.u.*media.electre-ng.com/images/*")
  end
