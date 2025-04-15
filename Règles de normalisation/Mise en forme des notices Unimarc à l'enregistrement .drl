@@ -103,24 +103,9 @@ then
     replaceContents "ISD.u.^(.{10})_.*" with "!$1"
 end
 
-rule "Notice a un 073 Lien Amazon "
-priority 05
-when
-    exists "073.a" AND not exists "901.a.AMAZON"
-then
-    copyField "073.a" to "AMA.u"
-    addSubField "AMA.a.AMAZON"
-    prefix "AMA.u" with "https://images-na.ssl-images-amazon.com/images/P/"
-    suffix "AMA.u" with ".jpg"
-    changeFirstIndicator "AMA" to "1"
-    changeSecondIndicator "AMA" to "2"
-    changeField "AMA" to "901"
-end
-
 rule "Notice sans 073 Lien Amazon "
 priority 05
 when
-    not exists "073.a" AND 
     exists "010.a" AND 
     not exists "901.a.AMAZON"
 then
