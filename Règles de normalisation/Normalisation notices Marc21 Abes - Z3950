@@ -78,3 +78,12 @@ then
   replaceContents "77*.w.(ABES)" with "(PPN)"
   replaceContents "78*.w.(ABES)" with "(PPN)"
 end
+rule "Corrections du lien vers les autorités marc21"
+priority 03
+when
+ (TRUE)
+then
+ addSubField "1**.2.idref" if (exists "1**.0.(IdRef)*")
+  replaceContents "6**.2.ram" with "idref"
+  addSubField "7**.2.idref" if (exists "7**.0.(IdRef)*")
+end
