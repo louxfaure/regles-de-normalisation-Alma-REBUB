@@ -1,22 +1,49 @@
-rule "Structure titre"
-# https://rebub.u-bordeaux.fr/index.php/wiki/configuration/primo/normalisation-indexation/affichage-du-titre/
+rule "Nettoyage 9##"
 priority 10
 when
-(true)
+  (TRUE)
 then
-   removeField "TIT"
-   copyField "200" to "TIT"
-   prefix "TIT.a" with "__ ; "
-   prefix "TIT.c" with ". "
-   prefix "TIT.d" with " = "
-   prefix "TIT.e" with " : "
-   prefix "TIT.h" with ". "
-   prefix "TIT.i" with ",  "
-   prefix "TIT.f" with " /  "
-   prefix "TIT.g" with " ;  "
-   replaceContentsOnlyFirst "TIT.a.__ ; " with ""
-   replaceContents "TIT.a.__" with ""
+  removeField "904"
+  removeField "994"   
 end
+
+rule "ajoute 904.a.FRBR  sauf les notices de périodiques et les notices avec un 996a"
+priority 09
+when
+  (not existsControl "LDR.{7,1}.s" ) AND (not exists "996.a")
+then
+  addField "904.a.FRBR" 
+end
+
+
+rule "Cree un rebond vers le SUDOC sur la base du PPN"
+priority 09
+when
+   (exists "035.a.(PPN)*")
+then
+    copyField "035.a" to "SUD.u" if (exists "035.a.(PPN)*")
+    replaceContents "SUD.u.(PPN)" with ""
+    addSubField  "SUD.a.SUDOC"
+    moveSubfieldsToEndOfField "SUD" "u" 
+    changeField "SUD" to "994"
+    removeField "SUD"
+end
+
+
+rule "Cree un rebond vers le catalogue de Bordeaux Métropole sur la base de l'ISBN"
+priority  09
+when
+   (exists "010.a")
+then
+    copyField "010.a" to "CUB.u"
+    combineFields "CUB" excluding "9"
+    replaceContentsExceptFirst "CUB.u" with ""
+    addSubField  "CUB.a.CUB"
+    moveSubfieldsToEndOfField "CUB" "u"   
+   changeField "CUB" to "994" if (not exists "CUB.u.TRUC")
+   removeField "CUB" 
+end
+
 
 rule "Corrige PPN"
 # Corrige les erreurs les plus fréquentes sur la saisie des PPN
@@ -37,50 +64,32 @@ then
 end
 
 
-rule "Création TOC - 359 ind1=2 - V2"
-priority 08
-# copie le contenu de la 359 si elle contient un ind1=2 dans le champs TOC
-# ajoute des balises codées qui seront transformées en HTML dans une regle de normalisation primo
-when
-(exists "359.{2,-}.v") OR (exists "359.{2,-}.c") OR (exists "359.{2,-}.d") OR (exists "359.{2,-}.e") OR (exists "359.{2,-}.f") OR (exists "359.{2,-}.g") OR (exists "359.{2,-}.h") OR (exists "359.{2,-}.i")
-then
-   removeField "TOC"
-   copyField "359" to "TOC"
-prefix "TOC.v" with "@openspan class='vol'>"
-	 suffix "TOC.v" with "@closespan"
-prefix "TOC.p" with "@openspan class='page'>"
-	 suffix "TOC.p" with "@closespan"
-   prefix "TOC.b" with "@openspan class='toc1'>"
-	 suffix "TOC.b" with "@closespan"
-prefix "TOC.c" with "@openspan class='toc2'>"
-	 suffix "TOC.c" with "@closespan"
-prefix "TOC.d" with "@openspan class='toc3'>"
-	 suffix "TOC.d" with "@closespan"
-prefix "TOC.e" with "@openspan class='toc4'>"
-	 suffix "TOC.e" with "@closespan"
-prefix "TOC.f" with "@openspan class='toc5'>"
-	 suffix "TOC.f" with "@closespan"
-prefix "TOC.g" with "@openspan class='toc6'>"
-	 suffix "TOC.g" with "@closespan"
-prefix "TOC.h" with "@openspan class='toc7'>"
-	 suffix "TOC.h" with "@closespan"
-prefix "TOC.i" with "@openspan class='toc8'>"
-	 suffix "TOC.i" with "@closespan"  
-end
 
-rule "Création TOC - 359 ind1=2 - V2 $b tout seul"
+
+rule "On transfert les champs 200$h et $i dans un champ 902$a pour créer une clef de DEDUP"
 priority 07
 when
-(exists "359.{2,-}.b") AND ((not exists "359.{2,-}.c") OR (not exists "359.{2,-}.d") OR (not exists "359.{2,-}.e") OR (not exists "359.{2,-}.f") OR (not exists "359.{2,-}.g") OR (not exists "359.{2,-}.h") OR (not exists "359.{2,-}.i"))
+  (exists "200.h") OR (exists "200.i")
 then
-   removeField "TOC"
-   copyField "359" to "TOC"
-prefix "TOC.v" with "@openspan class='vol'>"
-	 suffix "TOC.v" with "@closespan"
-prefix "TOC.p" with "@openspan class='page'>"
-	 suffix "TOC.p" with "@closespan"
-   prefix "TOC.b" with "@openspan class='toc1_alone'>"
-	 suffix "TOC.b" with "@closespan"
+  removeField "902"
+  addField "902.a._"
+  prefixSubField "902.a" with "200.h" if (exists "902.a")
+  suffixSubField "902.a" with "200.i" if (exists "902.a")
+   replaceContents "902.a.^_(.*)$" with "$1"
+  replaceContents "902.a.^(.*)_$" with "$1"
+end
+
+rule "Créée une clef de DEDUP avec les PPN en 035, 452, 455 et 456"
+priority 07
+when
+  (TRUE)
+then
+  removeField "903"
+  copyField "035.a" to "903.a" if (exists "035.a.(PPN)*")
+  copyField "452.1" to "903.a" if (exists "452.1.001(PPN)*")
+  copyField "455.1" to "903.a" if (exists "455.1.001(PPN)*")
+//  copyField "456.1" to "903.a" if (exists "456.1.001(PPN)*")
+  replaceContents "903.a.001(PPN)" with "(PPN)"
 end
 
 rule "Test ISBN 13 ISBN 10 "
