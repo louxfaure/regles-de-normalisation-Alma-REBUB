@@ -9,9 +9,9 @@ end
 rule "Thèses en accès intranet"
 priority 6
 when
-    ((exists "856.z.Acc*s r*serv* au texte int*gral") and (not exists "856.z.*version partielle") and (exists "856.u.*") )
+    (exists "856.5.335229906*")
 then
-    addField "NOT.a.<h1>Thèse en accès limité</h1><p>accessible à distance sur authentification pour les membres de l'Université Bordeaux Montaigne, ou sur place sur les ordinateurs disponibles dans les bibliothèques (campus de Pessac).</p><p>L'ensemble de la collection des thèses de l'Université Bordeaux Montaigne a été numérisée et est accessible au format numérique. Vous êtes docteur de notre université et avez des questions sur la diffusion de votre thèse ? Nous serons ravis d'y répondre : <a href='https://extranet.u-bordeaux-montaigne.fr/rita_fo/?num_cg=59&num_form=1'>contactez-nous.</a></p>"
+    addField "NOT.a.<p class='alert'><strong>Thèse en accès limité</strong> accessible à distance <b>sur authentification pour les membres de l’Université Bordeaux Montaigne</b>,ou <b>sur place sur les ordinateurs disponibles dans les bibliothèques (campus de Pessac)</b>.</p><p class='info'>L’ensemble de la collection des thèses de l’Université Bordeaux Montaigne a été numérisée et est accessible au format numérique. Vous êtes docteur de notre université et avez des questions sur la diffusion de votre thèse ? Nous serons ravis d’y répondre : <a href='https://extranet.u-bordeaux-montaigne.fr/rita_fo/?num_cg=59&num_form=1'>contactez-nous</a>.</p>"
     copyField "856.u" to "LIE.a"
 end
 
@@ -23,7 +23,8 @@ when
 then
       copyField "310.a" to "NOT.a"  if (exists "310.a")
       copyField "371.a" to "NOT.a"  if (exists "371.a")
-      suffix "NOT.a" with ". Consultation à distance réservée aux membres de la communauté universitaire. <a href=https://www.u-bordeaux-montaigne.fr/fr/documentation/informations-pratiques/diffuser-sa-these.html'>En savoir plus</a>"
+      suffix "NOT.a" with ". <strong>Consultation à distance réservée aux membres de la communauté universitaire. <a href=https://www.u-bordeaux-montaigne.fr/fr/documentation/informations-pratiques/diffuser-sa-these.html'>En savoir plus</a></strong></p>"
+      prefix "NOT.a" with "<p class='alert'>"
       copyField "033.a" to "LIE.a"  if (exists "033.a")
       suffix "LIE.a" with "/document"
 end
@@ -36,7 +37,8 @@ when
 then
       copyField "310.a" to "NOT.a"  if (exists "310.a")
       copyField "371.a" to "NOT.a"  if (exists "371.a")
-      suffix "NOT.a" with ". <span class='these_ubm_pas_acces'>Pas d’accès</a>"
+      suffix "NOT.a" with ". <strong>Pas d’accès</strong></p>"
+      prefix "NOT.a" with "<p class='alert'>"
       copyField "033.a" to "LIE.a"  if (exists "033.a")
 end
 
@@ -46,6 +48,6 @@ priority 10
 when
     ((exists "856.z.* version partielle"))
 then
-      addField "NOT.a.Accès au texte intégral de la version partielle. La version complète est consultable sur place à l’Université Bordeaux Montaigne"
+      addField "NOT.a.<p class='alert'>Accès au texte intégral de la <strong>version partielle</strong>. La version complète est <strong>consultable sur place à l’Université Bordeaux Montaigne</strong></p>"
       copyField "856.u" to "LIE.a"  if (exists "856.z.*version partielle")
 end
